@@ -47,8 +47,8 @@ require.config({
     urlArgs: 'bust=' +  (new Date()).getTime()
 });
 // Bootstrap the application
-require(['facebook_application'], function (FacebookApplication) {
-  var app = new FacebookApplication();
+require(['facebook_browser'], function (FacebookBrowser) {
+  var app = new FacebookBrowser();
   app.initialize();
 });
 </script>
