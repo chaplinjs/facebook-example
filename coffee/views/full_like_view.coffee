@@ -1,11 +1,11 @@
 define [
   'mediator',
-  'views/application_view',
+  'views/base/view',
   'text!templates/full_like.hbs'
-], (mediator, ApplicationView, template) ->
+], (mediator, View, template) ->
   'use strict'
 
-  class FullLikeView extends ApplicationView
+  class FullLikeView extends View
 
     # Save the template string in a prototype property.
     # This is overwritten with the compiled template function.

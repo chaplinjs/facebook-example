@@ -1,11 +1,11 @@
 define [
-  'controllers/application_controller',
+  'controllers/base/controller',
   'models/likes', 'models/like',
   'views/likes_view', 'views/full_like_view'
-], (ApplicationController, Likes, Like, LikesView, FullLikeView) ->
+], (Controller, Likes, Like, LikesView, FullLikeView) ->
   'use strict'
 
-  class LikesController extends ApplicationController
+  class LikesController extends Controller
 
     title: 'Your Likes'
     historyURL: (params) ->

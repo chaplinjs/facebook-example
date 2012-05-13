@@ -1,11 +1,11 @@
 define [
   'handlebars',
-  'chaplin/views/view',
+  'chaplin',
   'lib/view_helper' # Just load the view helpers, no return value
-], (Handlebars, ChaplinView) ->
+], (Handlebars, Chaplin) ->
   'use strict'
 
-  class ApplicationView extends ChaplinView
+  class View extends Chaplin.View
 
     getTemplateFunction: ->
 

@@ -1,5 +1,5 @@
-define ['chaplin/models/model'], (ChaplinModel) ->
+define ['models/base/model'], (Model) ->
   'use strict'
 
-  class User extends ChaplinModel
+  class User extends Model
     # empty so far

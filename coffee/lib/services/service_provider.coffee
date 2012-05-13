@@ -1,14 +1,14 @@
 define [
   'underscore',
   'lib/utils',
-  'chaplin/lib/subscriber'
-], (_, utils, Subscriber) ->
+  'chaplin'
+], (_, utils, Chaplin) ->
   'use strict'
 
   class ServiceProvider
 
     # Mixin a Subscriber
-    _(@prototype).extend Subscriber
+    _(@prototype).extend Chaplin.Subscriber
 
     loading: false
 

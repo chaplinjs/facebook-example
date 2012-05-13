@@ -1,7 +1,4 @@
-define [
-  'chaplin/lib/create_mediator',
-  'chaplin/lib/support'
-], (createMediator, support) ->
+define ['chaplin'], (Chaplin) ->
   'use strict'
 
   # Mediator singleton
@@ -21,8 +18,10 @@ define [
   # The actual creation of the mediator takes place in the module
   # chaplin/lib/create_mediator.coffee.
 
+  console.log(Chaplin)
+
   # Create the mediator using Chaplin’s constructor.
-  mediator = createMediator
+  mediator = Chaplin.CreateMediator
     # Add properties/methods for getting/setting the user.
     createUserProperty: true
 
@@ -37,7 +36,7 @@ define [
   # -------------------------
 
   # Prevent extensions and make all properties non-configurable
-  if support.propertyDescriptors and Object.seal
+  if Chaplin.Support.propertyDescriptors and Object.seal
     Object.seal mediator
 
   mediator

@@ -1,11 +1,11 @@
 define [
-  'controllers/application_controller',
+  'controllers/base/controller',
   'models/posts',
   'views/posts_view'
-], (ApplicationController, Posts, PostsView) ->
+], (Controller, Posts, PostsView) ->
   'use strict'
 
-  class PostsController extends ApplicationController
+  class PostsController extends Controller
 
     title: 'Facebook Wall Posts'
     historyURL: 'posts'

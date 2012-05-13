@@ -1,14 +1,14 @@
 define [
   'mediator',
   'lib/utils',
-  'controllers/application_controller',
+  'controllers/base/controller',
   'models/user',
   'lib/services/facebook',
   'views/login_view'
-], (mediator, utils, ApplicationController, User, Facebook, LoginView) ->
+], (mediator, utils, Controller, User, Facebook, LoginView) ->
   'use strict'
 
-  class SessionController extends ApplicationController
+  class SessionController extends Controller
     # Service provider instances as static properties
     # This just hardcoded here to avoid async loading of service providers.
     # In the end you might want to do this.

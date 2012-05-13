@@ -1,17 +1,17 @@
 define [
   'mediator',
-  'chaplin/application',
-  'views/application_layout',
+  'chaplin',
+  'views/layout',
   'controllers/session_controller',
   'controllers/navigation_controller',
   'controllers/sidebar_controller',
   'routes'
-], (mediator, ChaplinApplication, ApplicationLayout, SessionController, NavigationController, SidebarController, routes) ->
+], (mediator, Chaplin, Layout, SessionController, NavigationController, SidebarController, routes) ->
   'use strict'
 
   # The application bootstrapper.
   # You should find a better name for your application.
-  class ExampleApplication extends ChaplinApplication
+  class FacebookApplication extends Chaplin.Application
 
     # Set your application name here so the document title is set to
     # “Controller title – Site title” (see ApplicationView#adjustTitle)
@@ -26,7 +26,7 @@ define [
       # Instantiate layout
       # ------------------
 
-      @layout = new ApplicationLayout {@title}
+      @layout = new Layout {@title}
 
 
       # Instantiate common controllers

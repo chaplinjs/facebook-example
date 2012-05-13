@@ -1,12 +1,12 @@
 define [
-  'controllers/application_controller',
+  'controllers/base/controller',
   'models/navigation',
   'views/navigation_view'
-], (ApplicationController, Navigation, NavigationView) ->
+], (Controller, Navigation, NavigationView) ->
 
   'use strict'
 
-  class NavigationController extends ApplicationController
+  class NavigationController extends Controller
 
     initialize: ->
       super

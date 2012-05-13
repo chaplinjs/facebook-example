@@ -1,8 +1,8 @@
 define [
   'mediator',
-  'chaplin/models/model'
-], (mediator, ChaplinModel) ->
+  'models/base/model'
+], (mediator, Model) ->
   'use strict'
 
-  class Post extends ChaplinModel
+  class Post extends Model
     # This model is intentionally left blank

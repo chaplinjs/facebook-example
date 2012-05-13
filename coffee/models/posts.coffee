@@ -1,12 +1,12 @@
 define [
   'underscore',
   'mediator',
-  'chaplin/models/collection',
+  'models/base/collection',
   'models/post'
-], (_, mediator, ChaplinCollection, Post) ->
+], (_, mediator, Collection, Post) ->
   'use strict'
 
-  class Posts extends ChaplinCollection
+  class Posts extends Collection
     model: Post
 
     initialize: ->

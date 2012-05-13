@@ -1,10 +1,10 @@
 define [
-  'controllers/application_controller',
+  'controllers/base/controller',
   'views/sidebar_view'
-], (ApplicationController, SidebarView) ->
+], (Controller, SidebarView) ->
   'use strict'
 
-  class SidebarController extends ApplicationController
+  class SidebarController extends Controller
 
     initialize: ->
       @view = new SidebarView()

@@ -1,12 +1,12 @@
 define [
   'mediator',
-  'views/application_collection_view',
+  'views/base/collection_view',
   'views/post_view',
   'text!templates/posts.hbs'
-], (mediator, ApplicationCollectionView, PostView, template) ->
+], (mediator, CollectionView, PostView, template) ->
   'use strict'
 
-  class PostsView extends ApplicationCollectionView
+  class PostsView extends CollectionView
 
     # Save the template string in a prototype property.
     # This is overwritten with the compiled template function.

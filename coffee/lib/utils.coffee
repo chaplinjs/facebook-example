@@ -1,14 +1,14 @@
 define [
   'underscore',
   'mediator',
-  'chaplin/lib/utils'
-], (_, mediator, chaplinUtils) ->
+  'chaplin'
+], (_, mediator, Chaplin) ->
 
   # Application-specific utilities
   # ------------------------------
 
   # Delegate to Chaplin’s utils module
-  utils = chaplinUtils.beget chaplinUtils
+  utils = Chaplin.Utils.beget Chaplin.Utils
 
   # Add additional application-specific properties and methods
 
