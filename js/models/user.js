@@ -2,7 +2,7 @@
 var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['chaplin/models/model'], function(ChaplinModel) {
+define(['models/base/model'], function(Model) {
   'use strict';
 
   var User;
@@ -18,5 +18,5 @@ define(['chaplin/models/model'], function(ChaplinModel) {
 
     return User;
 
-  })(ChaplinModel);
+  })(Model);
 });

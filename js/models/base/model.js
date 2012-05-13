@@ -2,21 +2,19 @@
 var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['mediator', 'models/base/model'], function(mediator, Model) {
-  'use strict';
+define(['chaplin'], function(Chaplin) {
+  var Model;
+  return Model = (function(_super) {
 
-  var Post;
-  return Post = (function(_super) {
+    __extends(Model, _super);
 
-    __extends(Post, _super);
+    Model.name = 'Model';
 
-    Post.name = 'Post';
-
-    function Post() {
-      return Post.__super__.constructor.apply(this, arguments);
+    function Model() {
+      return Model.__super__.constructor.apply(this, arguments);
     }
 
-    return Post;
+    return Model;
 
-  })(Model);
+  })(Chaplin.Model);
 });

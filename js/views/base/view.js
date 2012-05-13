@@ -2,21 +2,21 @@
 var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['handlebars', 'chaplin/views/view', 'lib/view_helper'], function(Handlebars, ChaplinView) {
+define(['handlebars', 'chaplin', 'lib/view_helper'], function(Handlebars, Chaplin) {
   'use strict';
 
-  var ApplicationView;
-  return ApplicationView = (function(_super) {
+  var View;
+  return View = (function(_super) {
 
-    __extends(ApplicationView, _super);
+    __extends(View, _super);
 
-    ApplicationView.name = 'ApplicationView';
+    View.name = 'View';
 
-    function ApplicationView() {
-      return ApplicationView.__super__.constructor.apply(this, arguments);
+    function View() {
+      return View.__super__.constructor.apply(this, arguments);
     }
 
-    ApplicationView.prototype.getTemplateFunction = function() {
+    View.prototype.getTemplateFunction = function() {
       var template, templateFunc;
       template = this.template;
       if (typeof template === 'string') {
@@ -28,7 +28,7 @@ define(['handlebars', 'chaplin/views/view', 'lib/view_helper'], function(Handleb
       return templateFunc;
     };
 
-    return ApplicationView;
+    return View;
 
-  })(ChaplinView);
+  })(Chaplin.View);
 });

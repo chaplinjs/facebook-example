@@ -2,7 +2,7 @@
 var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['controllers/application_controller', 'models/navigation', 'views/navigation_view'], function(ApplicationController, Navigation, NavigationView) {
+define(['controllers/base/controller', 'models/navigation', 'views/navigation_view'], function(Controller, Navigation, NavigationView) {
   'use strict';
 
   var NavigationController;
@@ -29,5 +29,5 @@ define(['controllers/application_controller', 'models/navigation', 'views/naviga
 
     return NavigationController;
 
-  })(ApplicationController);
+  })(Controller);
 });

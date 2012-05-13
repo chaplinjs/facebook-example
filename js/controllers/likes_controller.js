@@ -2,7 +2,7 @@
 var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['controllers/application_controller', 'models/likes', 'models/like', 'views/likes_view', 'views/full_like_view'], function(ApplicationController, Likes, Like, LikesView, FullLikeView) {
+define(['controllers/base/controller', 'models/likes', 'models/like', 'views/likes_view', 'views/full_like_view'], function(Controller, Likes, Like, LikesView, FullLikeView) {
   'use strict';
 
   var LikesController;
@@ -50,5 +50,5 @@ define(['controllers/application_controller', 'models/likes', 'models/like', 'vi
 
     return LikesController;
 
-  })(ApplicationController);
+  })(Controller);
 });
