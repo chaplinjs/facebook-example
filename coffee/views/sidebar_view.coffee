@@ -1,9 +1,12 @@
 define [
-  'mediator',
-  'views/base/view',
+  'chaplin'
+  'views/base/view'
   'text!templates/sidebar.hbs'
-], (mediator, View, template) ->
+], (Chaplin, View, template) ->
   'use strict'
+
+  # Shortcut to the mediator
+  mediator = Chaplin.mediator
 
   class SidebarView extends View
 
@@ -14,7 +17,7 @@ define [
     template = null
 
     id: 'sidebar'
-    containerSelector: '#sidebar-container'
+    container: '#sidebar-container'
     autoRender: true
 
     initialize: ->

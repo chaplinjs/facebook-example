@@ -1,10 +1,10 @@
 define [
   'chaplin',
-  'views/application_view'
-], (Chaplin, ApplicationView) ->
+  'views/base/view'
+], (Chaplin, View) ->
   'use strict'
 
   class CollectionView extends Chaplin.CollectionView
 
     # Borrow the method from the View prototype
-    getTemplateFunction: ApplicationView::getTemplateFunction
+    getTemplateFunction: View::getTemplateFunction

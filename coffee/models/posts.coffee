@@ -1,12 +1,13 @@
 define [
-  'underscore',
-  'mediator',
-  'models/base/collection',
+  'underscore'
+  'chaplin'
+  'models/base/collection'
   'models/post'
-], (_, mediator, Collection, Post) ->
+], (_, Chaplin, Collection, Post) ->
   'use strict'
 
   class Posts extends Collection
+
     model: Post
 
     initialize: ->
@@ -23,7 +24,8 @@ define [
     # a REST/JSON API which might be accessed using Ajax
     fetch: =>
       ###console.debug 'Posts#fetch'###
-      user = mediator.user
+
+      user = Chaplin.mediator.user
       return unless user
 
       facebook = user.get 'provider'

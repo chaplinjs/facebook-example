@@ -1,12 +1,11 @@
 define [
-  'controllers/base/controller',
-  'models/navigation',
+  'chaplin'
+  'models/navigation'
   'views/navigation_view'
-], (Controller, Navigation, NavigationView) ->
-
+], (Chaplin, Navigation, NavigationView) ->
   'use strict'
 
-  class NavigationController extends Controller
+  class NavigationController extends Chaplin.Controller
 
     initialize: ->
       super

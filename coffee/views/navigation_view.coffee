@@ -1,5 +1,5 @@
 define [
-  'views/base/view',
+  'views/base/view'
   'text!templates/navigation.hbs'
 ], (View, template) ->
   'use strict'
@@ -13,7 +13,7 @@ define [
     template = null
 
     id: 'navigation'
-    containerSelector: '#navigation-container'
+    container: '#navigation-container'
     autoRender: true
 
     initialize: ->

@@ -1,9 +1,9 @@
 define [
-  'mediator',
-  'views/base/collection_view',
-  'views/post_view',
+  'chaplin'
+  'views/base/collection_view'
+  'views/post_view'
   'text!templates/posts.hbs'
-], (mediator, CollectionView, PostView, template) ->
+], (Chaplin, CollectionView, PostView, template) ->
   'use strict'
 
   class PostsView extends CollectionView
@@ -17,7 +17,7 @@ define [
     tagName: 'div' # This is not directly a list but contains a list
     id: 'posts'
 
-    containerSelector: '#content-container'
+    container: '#content-container'
 
     # Append the item views to this element
     listSelector: 'ol'
@@ -38,7 +38,8 @@ define [
 
     # Show/hide a login appeal if not logged in
     showHideLoginNote: ->
-      @$('.login-note').css 'display', if mediator.user then 'none' else 'block'
+      @$('.login-note').css 'display',
+        if Chaplin.mediator.user then 'none' else 'block'
 
     render: ->
       super

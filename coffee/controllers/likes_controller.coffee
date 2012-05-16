@@ -1,11 +1,13 @@
 define [
-  'controllers/base/controller',
-  'models/likes', 'models/like',
-  'views/likes_view', 'views/full_like_view'
-], (Controller, Likes, Like, LikesView, FullLikeView) ->
+  'chaplin'
+  'models/likes'
+  'models/like'
+  'views/likes_view'
+  'views/full_like_view'
+], (Chaplin, Likes, Like, LikesView, FullLikeView) ->
   'use strict'
 
-  class LikesController extends Controller
+  class LikesController extends Chaplin.Controller
 
     title: 'Your Likes'
     historyURL: (params) ->

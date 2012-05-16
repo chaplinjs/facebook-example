@@ -1,5 +1,5 @@
 define [
-  'views/base/view',
+  'views/base/view'
   'text!templates/compact_like.hbs'
 ], (View, template) ->
   'use strict'

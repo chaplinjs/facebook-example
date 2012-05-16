@@ -1,11 +1,14 @@
 define [
-  'underscore',
-  'mediator',
-  'lib/utils',
-  'views/base/view',
+  'underscore'
+  'chaplin'
+  'lib/utils'
+  'views/base/view'
   'text!templates/login.hbs'
-], (_, mediator, utils, View, template) ->
+], (_, Chaplin, utils, View, template) ->
   'use strict'
+
+  # Shortcut to the mediator
+  mediator = Chaplin.mediator
 
   class LoginView extends View
 
@@ -16,7 +19,7 @@ define [
     template = null
 
     id: 'login'
-    containerSelector: '#sidebar-container'
+    container: '#sidebar-container'
     autoRender: true
 
     # Expects the serviceProviders in the options

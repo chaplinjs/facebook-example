@@ -1,8 +1,8 @@
 define [
-  'mediator',
-  'views/base/view',
+  'chaplin'
+  'views/base/view'
   'text!templates/full_like.hbs'
-], (mediator, View, template) ->
+], (Chaplin, View, template) ->
   'use strict'
 
   class FullLikeView extends View
@@ -14,7 +14,7 @@ define [
     template = null
 
     id: 'like'
-    containerSelector: '#content-container'
+    container: '#content-container'
     autoRender: true
 
     initialize: ->
@@ -32,7 +32,7 @@ define [
 
       # Parse Facebook widgets
       if @model.state() is 'resolved'
-        user = mediator.user
+        user = Chaplin.mediator.user
         provider = user.get 'provider'
         if provider.name is 'facebook'
           provider.parse @el

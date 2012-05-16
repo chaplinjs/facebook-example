@@ -1,14 +1,15 @@
 define [
-  'mediator',
-  'lib/utils',
-  'controllers/base/controller',
-  'models/user',
-  'lib/services/facebook',
+  'chaplin'
+  'models/user'
+  'lib/services/facebook'
   'views/login_view'
-], (mediator, utils, Controller, User, Facebook, LoginView) ->
+], (Chaplin, User, Facebook, LoginView) ->
   'use strict'
 
-  class SessionController extends Controller
+  # Shortcut to the mediator
+  mediator = Chaplin.mediator
+
+  class SessionController extends Chaplin.Controller
     # Service provider instances as static properties
     # This just hardcoded here to avoid async loading of service providers.
     # In the end you might want to do this.
@@ -51,8 +52,7 @@ define [
 
     # Instantiate the user with the given data
     createUser: (userData) ->
-      user = new User userData
-      mediator.setUser user
+      mediator.user = new User userData
 
     # Try to get an existing session from one of the login providers
     getSession: ->

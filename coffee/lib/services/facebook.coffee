@@ -1,10 +1,13 @@
 define [
   'underscore',
-  'mediator',
+  'chaplin',
   'lib/utils',
   'lib/services/service_provider'
-], (_, mediator, utils, ServiceProvider) ->
+], (_, Chaplin, utils, ServiceProvider) ->
   'use strict'
+
+  # Shortcut to the mediator
+  mediator = Chaplin.mediator
 
   class Facebook extends ServiceProvider
 

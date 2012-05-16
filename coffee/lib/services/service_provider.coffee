@@ -1,8 +1,8 @@
 define [
-  'underscore',
-  'lib/utils',
+  'underscore'
   'chaplin'
-], (_, utils, Chaplin) ->
+  'lib/utils'
+], (_, Chaplin, utils) ->
   'use strict'
 
   class ServiceProvider

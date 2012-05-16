@@ -1,11 +1,12 @@
 define [
   'underscore',
-  'mediator',
+  'chaplin',
   'models/base/model'
-], (_, mediator, Model) ->
+], (_, Chaplin, Model) ->
   'use strict'
 
   class Like extends Model
+
     initialize: (attributes, options) ->
       super
       ###console.debug 'Like#initialize', attributes, options###
@@ -22,7 +23,7 @@ define [
     fetch: ->
       ###console.debug 'Like#getLike'###
 
-      user = mediator.user
+      user = Chaplin.mediator.user
       return unless user
 
       provider = user.get 'provider'

@@ -1,12 +1,15 @@
 define [
-  'handlebars',
-  'mediator',
+  'handlebars'
+  'chaplin'
   'lib/utils'
-], (Handlebars, mediator, utils) ->
+], (Handlebars, Chaplin, utils) ->
   'use strict'
 
   # View helpers
   # ------------
+
+  # Shortcut to the mediator
+  mediator = Chaplin.mediator
 
   # Conditional evaluation
   # ----------------------

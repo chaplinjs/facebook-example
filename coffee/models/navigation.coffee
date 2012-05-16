@@ -1,7 +1,10 @@
-define ['models/base/model'], (Model) ->
+define [
+  'models/base/model'
+], (Model) ->
   'use strict'
 
   class Navigation extends Model
+
     defaults:
       items: [
         {href: '/', title: 'Likes Browser'}

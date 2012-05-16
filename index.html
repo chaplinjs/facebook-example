@@ -39,7 +39,7 @@ require.config({
       backbone: 'vendor/backbone-0.9.2',
       handlebars: 'vendor/handlebars-1.0.0.beta.6',
       text: 'vendor/require-text-1.0.8',
-      chaplin: 'vendor/chaplin-0.3'
+      chaplin: 'vendor/chaplin'
     },
     waitSeconds: 1,
     // For easier development, disable browser caching
@@ -47,8 +47,8 @@ require.config({
     urlArgs: 'bust=' +  (new Date()).getTime()
 });
 // Bootstrap the application
-require(['facebook_browser'], function (FacebookBrowser) {
-  var app = new FacebookBrowser();
+require(['facebook_application'], function (FacebookApplication) {
+  var app = new FacebookApplication();
   app.initialize();
 });
 </script>

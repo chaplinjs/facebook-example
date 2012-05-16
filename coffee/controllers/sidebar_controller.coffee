@@ -1,10 +1,10 @@
 define [
-  'controllers/base/controller',
+  'chaplin'
   'views/sidebar_view'
-], (Controller, SidebarView) ->
+], (Chaplin, SidebarView) ->
   'use strict'
 
-  class SidebarController extends Controller
+  class SidebarController extends Chaplin.Controller
 
     initialize: ->
       @view = new SidebarView()

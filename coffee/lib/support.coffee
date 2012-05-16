@@ -1,6 +1,6 @@
 define [
-  'underscore',
-  'lib/utils',
+  'underscore'
+  'lib/utils'
   'chaplin'
 ], (_, utils, Chaplin) ->
 
@@ -8,7 +8,7 @@ define [
   # --------------------------------------
 
   # Delegate to Chaplin’s support module
-  support = utils.beget Chaplin.Support
+  support = utils.beget Chaplin.support
 
   # Add additional application-specific properties and methods
 

@@ -1,11 +1,12 @@
 define [
-  'mediator',
+  'chaplin',
   'models/base/collection',
   'models/like'
-], (mediator, Collection, Like) ->
+], (Chaplin, Collection, Like) ->
   'use strict'
 
   class Likes extends Collection
+
     model: Like
 
     initialize: ->
@@ -22,7 +23,8 @@ define [
     # a REST/JSON API which might be accessed using Ajax
     fetch: =>
       ###console.debug 'Likes#fetch'###
-      user = mediator.user
+
+      user = Chaplin.mediator.user
       return unless user
 
       facebook = user.get 'provider'

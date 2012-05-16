@@ -1,3 +1,5 @@
-define ['chaplin'], (Chaplin) ->
+define [
+  'chaplin'
+], (Chaplin) ->
 
   class Model extends Chaplin.Model

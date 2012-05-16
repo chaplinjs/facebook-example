@@ -1,5 +1,7 @@
-define ['models/base/model'], (Model) ->
+define [
+  'models/base/model'
+], (Model) ->
   'use strict'
 
   class User extends Model
-    # empty so far
+    # This model is intentionally left blank

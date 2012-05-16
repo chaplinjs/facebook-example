@@ -1,11 +1,11 @@
 define [
-  'controllers/base/controller',
-  'models/posts',
+  'chaplin'
+  'models/posts'
   'views/posts_view'
-], (Controller, Posts, PostsView) ->
+], (Chaplin, Posts, PostsView) ->
   'use strict'
 
-  class PostsController extends Controller
+  class PostsController extends Chaplin.Controller
 
     title: 'Facebook Wall Posts'
     historyURL: 'posts'
