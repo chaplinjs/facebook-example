@@ -1,0 +1,3 @@
+[submodule "coffee/lib/services"]
+	path = coffee/lib/services
+	url = git@github.com:chaplinjs/service-providers.git
