@@ -133,7 +133,7 @@ define(['chaplin', 'models/user', 'lib/services/facebook', 'views/login_view'], 
         return;
       }
       mediator.user.dispose();
-      return mediator.setUser(null);
+      return mediator.user = null;
     };
 
     return SessionController;

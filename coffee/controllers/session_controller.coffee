@@ -147,4 +147,4 @@ define [
       # Dispose the user model
       mediator.user.dispose()
       # Nullify property on the mediator
-      mediator.setUser null
+      mediator.user = null
