@@ -17,6 +17,7 @@ define [
     tagName: 'div' # This is not directly a list but contains a list
     id: 'posts'
 
+    # Automatically append to the DOM on render
     container: '#content-container'
 
     # Append the item views to this element

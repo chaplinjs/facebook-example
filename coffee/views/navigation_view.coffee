@@ -13,10 +13,12 @@ define [
     template = null
 
     id: 'navigation'
+    # Automatically append to the DOM on render
     container: '#navigation-container'
+    # Automatically render after initialize
     autoRender: true
 
     initialize: ->
       super
-      ###console.debug 'NavigationView#initialize'###
+      #console.debug 'NavigationView#initialize'
       @subscribeEvent 'startupController', @render

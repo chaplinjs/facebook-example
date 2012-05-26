@@ -14,12 +14,14 @@ define [
     template = null
 
     id: 'like'
+    # Automatically append to the DOM on render
     container: '#content-container'
+    # Automatically render after initialize
     autoRender: true
 
     initialize: ->
       super
-      ###console.debug 'FullLikeView#initialize'###
+      #console.debug 'FullLikeView#initialize'
 
       # Render again when the model is resolved
       if @model.state() isnt 'resolved'
@@ -28,7 +30,7 @@ define [
     # Rendering
     render: ->
       super
-      ###console.debug 'FullLikeView#render'###
+      #console.debug 'FullLikeView#render'
 
       # Parse Facebook widgets
       if @model.state() is 'resolved'

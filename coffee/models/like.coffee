@@ -9,7 +9,7 @@ define [
 
     initialize: (attributes, options) ->
       super
-      ###console.debug 'Like#initialize', attributes, options###
+      #console.debug 'Like#initialize', attributes, options
 
       if options and options.loadDetails
 
@@ -21,7 +21,7 @@ define [
     # Custom fetch function since the Facebook graph is not
     # a REST/JSON API which might be accessed using Ajax
     fetch: ->
-      ###console.debug 'Like#getLike'###
+      #console.debug 'Like#getLike'
 
       user = Chaplin.mediator.user
       return unless user
@@ -31,7 +31,7 @@ define [
       provider.getInfo @id, @processLike
 
     processLike: (response) =>
-      ###console.debug 'Like#processLike', response###
+      #console.debug 'Like#processLike', response
       @set response
       @resolve()
 
