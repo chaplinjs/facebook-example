@@ -366,7 +366,7 @@
     })(Backbone.Collection);
   });
 
-  define('chaplin/models/model', ['underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/subscriber'], function(_, Backbone, utils, Subscriber) {
+  define('chaplin/models/model', ['underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/subscriber', 'chaplin/lib/sync_machine'], function(_, Backbone, utils, Subscriber, SyncMachine) {
     'use strict';
 
     var Model;
@@ -800,30 +800,28 @@
       };
 
       View.prototype.getTemplateData = function() {
-        var items, model, modelOrCollection, templateData;
+        var items, model, modelOrCollection, templateData, _i, _len, _ref;
         if (this.model) {
           templateData = this.model.serialize();
         } else if (this.collection) {
-          items = (function() {
-            var _i, _len, _ref, _results;
-            _ref = this.collection.models;
-            _results = [];
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              model = _ref[_i];
-              _results.push(model.serialize());
-            }
-            return _results;
-          }).call(this);
+          items = [];
+          _ref = this.collection.models;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            model = _ref[_i];
+            items.push(model.serialize());
+          }
           templateData = {
             items: items
           };
+        } else {
+          templateData = {};
         }
         modelOrCollection = this.model || this.collection;
         if (modelOrCollection) {
-          if (typeof modelOrCollection.state === 'function') {
+          if (typeof modelOrCollection.state === 'function' && !('resolved' in templateData)) {
             templateData.resolved = modelOrCollection.state() === 'resolved';
           }
-          if (typeof modelOrCollection.isSynced === 'function') {
+          if (typeof modelOrCollection.isSynced === 'function' && !('synced' in templateData)) {
             templateData.synced = modelOrCollection.isSynced();
           }
         }
