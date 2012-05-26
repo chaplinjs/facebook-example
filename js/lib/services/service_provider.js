@@ -11,7 +11,7 @@ define(['underscore', 'chaplin', 'lib/utils'], function(_, Chaplin, utils) {
     ServiceProvider.prototype.loading = false;
 
     function ServiceProvider() {
-      this.initDeferred();
+      _(this).extend($.Deferred());
       utils.deferMethods({
         deferred: this,
         methods: ['triggerLogin', 'getLoginStatus'],
