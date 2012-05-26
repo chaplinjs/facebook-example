@@ -12,10 +12,8 @@ define [
       #console.debug 'Like#initialize', attributes, options
 
       if options and options.loadDetails
-
         # Mixin a Deferred
-        _(this).extend $.Deferred()
-
+        @initDeferred()
         @fetch()
 
     # Custom fetch function since the Facebook graph is not

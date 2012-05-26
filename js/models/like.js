@@ -19,7 +19,7 @@ define(['underscore', 'chaplin', 'models/base/model'], function(_, Chaplin, Mode
     Like.prototype.initialize = function(attributes, options) {
       Like.__super__.initialize.apply(this, arguments);
       if (options && options.loadDetails) {
-        _(this).extend($.Deferred());
+        this.initDeferred();
         return this.fetch();
       }
     };
