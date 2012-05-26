@@ -11,8 +11,6 @@ define(['underscore', 'chaplin', 'lib/utils'], function(_, Chaplin, utils) {
     ServiceProvider.prototype.loading = false;
 
     function ServiceProvider() {
-      /*console.debug 'ServiceProvider#constructor'
-      */
       _(this).extend($.Deferred());
       utils.deferMethods({
         deferred: this,
@@ -24,8 +22,6 @@ define(['underscore', 'chaplin', 'lib/utils'], function(_, Chaplin, utils) {
     ServiceProvider.prototype.disposed = false;
 
     ServiceProvider.prototype.dispose = function() {
-      /*console.debug 'ServiceProvider#dispose'
-      */
       if (this.disposed) {
         return;
       }

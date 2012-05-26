@@ -18,19 +18,13 @@ define(['underscore', 'chaplin', 'models/base/model'], function(_, Chaplin, Mode
 
     Like.prototype.initialize = function(attributes, options) {
       Like.__super__.initialize.apply(this, arguments);
-      /*console.debug 'Like#initialize', attributes, options
-      */
-
       if (options && options.loadDetails) {
-        _(this).extend($.Deferred());
+        this.initDeferred();
         return this.fetch();
       }
     };
 
     Like.prototype.fetch = function() {
-      /*console.debug 'Like#getLike'
-      */
-
       var provider, user;
       user = Chaplin.mediator.user;
       if (!user) {
@@ -44,8 +38,6 @@ define(['underscore', 'chaplin', 'models/base/model'], function(_, Chaplin, Mode
     };
 
     Like.prototype.processLike = function(response) {
-      /*console.debug 'Like#processLike', response
-      */
       this.set(response);
       return this.resolve();
     };

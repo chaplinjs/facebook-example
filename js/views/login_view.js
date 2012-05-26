@@ -27,16 +27,10 @@ define(['underscore', 'chaplin', 'lib/utils', 'views/base/view', 'text!templates
 
     LoginView.prototype.initialize = function(options) {
       LoginView.__super__.initialize.apply(this, arguments);
-      /*console.debug 'LoginView#initialize', @el, options, options.serviceProviders
-      */
-
       return this.initButtons(options.serviceProviders);
     };
 
     LoginView.prototype.initButtons = function(serviceProviders) {
-      /*console.debug 'LoginView#initButtons', serviceProviders
-      */
-
       var buttonSelector, failed, loaded, loginHandler, serviceProvider, serviceProviderName, _results;
       _results = [];
       for (serviceProviderName in serviceProviders) {
@@ -54,8 +48,6 @@ define(['underscore', 'chaplin', 'lib/utils', 'views/base/view', 'text!templates
     };
 
     LoginView.prototype.loginWith = function(serviceProviderName, serviceProvider, e) {
-      /*console.debug 'LoginView#loginWith', serviceProviderName, serviceProvider
-      */
       e.preventDefault();
       if (!serviceProvider.isLoaded()) {
         return;
@@ -65,14 +57,10 @@ define(['underscore', 'chaplin', 'lib/utils', 'views/base/view', 'text!templates
     };
 
     LoginView.prototype.serviceProviderLoaded = function(serviceProviderName) {
-      /*console.debug 'LoginView#serviceProviderLoaded', serviceProviderName
-      */
       return this.$("." + serviceProviderName).removeClass('service-loading');
     };
 
     LoginView.prototype.serviceProviderFailed = function(serviceProviderName) {
-      /*console.debug 'LoginView#serviceProviderFailed', serviceProviderName
-      */
       return this.$("." + serviceProviderName).removeClass('service-loading').addClass('service-unavailable').attr('disabled', true).attr('title', 'Error connecting. Please check whether you are blocking ' + ("" + (utils.upcase(serviceProviderName)) + "."));
     };
 

@@ -19,8 +19,6 @@ define(['chaplin', 'models/posts', 'views/posts_view'], function(Chaplin, Posts,
     PostsController.prototype.historyURL = 'posts';
 
     PostsController.prototype.index = function(params) {
-      /*console.debug 'PostsController#index'
-      */
       this.posts = new Posts();
       return this.view = new PostsView({
         collection: this.posts
