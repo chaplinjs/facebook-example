@@ -2,6 +2,7 @@
 (function() {
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __slice = [].slice;
 
@@ -21,11 +22,7 @@
 
       Application.prototype.router = null;
 
-      Application.prototype.initialize = function() {
-        /*console.debug 'Application#initialize'
-        */
-
-      };
+      Application.prototype.initialize = function() {};
 
       Application.prototype.initDispatcher = function(options) {
         return this.dispatcher = new Dispatcher(options);
@@ -53,9 +50,6 @@
       Application.prototype.disposed = false;
 
       Application.prototype.dispose = function() {
-        /*console.debug 'Application#dispose'
-        */
-
         var prop, properties, _i, _len;
         if (this.disposed) {
           return;
@@ -122,9 +116,6 @@
         if (options == null) {
           options = {};
         }
-        /*console.debug 'Dispatcher#initialize'
-        */
-
         this.subscribeEvent('matchRoute', this.matchRoute);
         return this.subscribeEvent('!startupController', this.startupController);
       };
@@ -141,9 +132,6 @@
         if (params == null) {
           params = {};
         }
-        /*console.debug 'Dispatcher#startupController', controllerName, action, params
-        */
-
         if (params.changeURL !== false) {
           params.changeURL = true;
         }
@@ -208,8 +196,6 @@
       Dispatcher.prototype.disposed = false;
 
       Dispatcher.prototype.dispose = function() {
-        /*console.debug 'Dispatcher#dispose
-        */
         if (this.disposed) {
           return;
         }
@@ -244,9 +230,6 @@
       Controller.prototype.disposed = false;
 
       Controller.prototype.dispose = function() {
-        /*console.debug 'Controller#dispose', this, 'disposed?', @disposed
-        */
-
         var obj, prop, properties, _i, _len;
         if (this.disposed) {
           return;
@@ -299,7 +282,7 @@
       };
 
       Collection.prototype.addAtomic = function(models, options) {
-        var batch_direction, model;
+        var direction, model;
         if (options == null) {
           options = {};
         }
@@ -307,42 +290,42 @@
           return;
         }
         options.silent = true;
-        batch_direction = typeof options.at === 'number' ? 'pop' : 'shift';
-        while (model = models[batch_direction]()) {
+        direction = typeof options.at === 'number' ? 'pop' : 'shift';
+        while (model = models[direction]()) {
           this.add(model, options);
         }
         return this.trigger('reset');
       };
 
-      Collection.prototype.update = function(newList, options) {
+      Collection.prototype.update = function(models, options) {
         var fingerPrint, i, ids, model, newFingerPrint, preexistent, _i, _ids, _len, _results;
         if (options == null) {
           options = {};
         }
         fingerPrint = this.pluck('id').join();
-        ids = _(newList).pluck('id');
+        ids = _(models).pluck('id');
         newFingerPrint = ids.join();
-        if (fingerPrint !== newFingerPrint) {
+        if (newFingerPrint !== fingerPrint) {
           _ids = _(ids);
-          i = this.models.length - 1;
-          while (i >= 0) {
+          i = this.models.length;
+          while (i--) {
             model = this.models[i];
             if (!_ids.include(model.id)) {
               this.remove(model);
             }
-            i--;
           }
         }
-        if (!(fingerPrint === newFingerPrint && !options.deep)) {
+        if (newFingerPrint !== fingerPrint || options.deep) {
           _results = [];
-          for (i = _i = 0, _len = newList.length; _i < _len; i = ++_i) {
-            model = newList[i];
+          for (i = _i = 0, _len = models.length; _i < _len; i = ++_i) {
+            model = models[i];
             preexistent = this.get(model.id);
             if (preexistent) {
-              if (!options.deep) {
-                continue;
+              if (options.deep) {
+                _results.push(preexistent.set(model));
+              } else {
+                _results.push(void 0);
               }
-              _results.push(preexistent.set(model));
             } else {
               _results.push(this.add(model, {
                 at: i
@@ -356,9 +339,6 @@
       Collection.prototype.disposed = false;
 
       Collection.prototype.dispose = function() {
-        /*console.debug 'Collection#dispose', this, 'disposed?', @disposed
-        */
-
         var prop, properties, _i, _len;
         if (this.disposed) {
           return;
@@ -386,11 +366,12 @@
     })(Backbone.Collection);
   });
 
-  define('chaplin/models/model', ['underscore', 'backbone', 'chaplin/lib/subscriber'], function(_, Backbone, Subscriber) {
+  define('chaplin/models/model', ['underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/subscriber', 'chaplin/lib/sync_machine'], function(_, Backbone, utils, Subscriber, SyncMachine) {
     'use strict';
 
     var Model;
     return Model = (function(_super) {
+      var serializeAttributes;
 
       __extends(Model, _super);
 
@@ -404,16 +385,41 @@
         return _(this).extend($.Deferred());
       };
 
+      Model.prototype.initSyncMachine = function() {
+        return _(this).extend(SyncMachine);
+      };
+
       Model.prototype.getAttributes = function() {
         return this.attributes;
+      };
+
+      serializeAttributes = function(model, attributes, modelStack) {
+        var delegator, key, value;
+        if (!modelStack) {
+          delegator = utils.beget(attributes);
+          modelStack = [model];
+        } else {
+          modelStack.push(model);
+        }
+        for (key in attributes) {
+          value = attributes[key];
+          if (!(value instanceof Model)) {
+            continue;
+          }
+          delegator = delegator || utils.beget(attributes);
+          delegator[key] = value === model || __indexOf.call(modelStack, value) >= 0 ? null : serializeAttributes(value, value.getAttributes(), modelStack);
+        }
+        modelStack.pop();
+        return delegator || attributes;
+      };
+
+      Model.prototype.serialize = function(model) {
+        return serializeAttributes(this, this.getAttributes());
       };
 
       Model.prototype.disposed = false;
 
       Model.prototype.dispose = function() {
-        /*console.debug 'Model#dispose', this, 'disposed?', @disposed
-        */
-
         var prop, properties, _i, _len;
         if (this.disposed) {
           return;
@@ -424,7 +430,7 @@
         if (typeof this.reject === "function") {
           this.reject();
         }
-        properties = ['collection', 'attributes', '_escapedAttributes', '_previousAttributes', '_silent', '_pending', '_callbacks'];
+        properties = ['collection', 'attributes', 'changed', '_escapedAttributes', '_previousAttributes', '_silent', '_pending', '_callbacks'];
         for (_i = 0, _len = properties.length; _i < _len; _i++) {
           prop = properties[_i];
           delete this[prop];
@@ -438,7 +444,7 @@
     })(Backbone.Model);
   });
 
-  define('chaplin/views/layout', ['jquery', 'underscore', 'chaplin/mediator', 'chaplin/lib/utils', 'chaplin/lib/subscriber'], function($, _, mediator, utils, Subscriber) {
+  define('chaplin/views/layout', ['jquery', 'underscore', 'backbone', 'chaplin/mediator', 'chaplin/lib/utils', 'chaplin/lib/subscriber'], function($, _, Backbone, mediator, utils, Subscriber) {
     'use strict';
 
     var Layout;
@@ -447,6 +453,14 @@
       _(Layout.prototype).extend(Subscriber);
 
       Layout.prototype.title = '';
+
+      Layout.prototype.events = {};
+
+      Layout.prototype.el = document;
+
+      Layout.prototype.$el = $(document);
+
+      Layout.prototype.cid = 'chaplin-layout';
 
       function Layout() {
         this.openLink = __bind(this.openLink, this);
@@ -457,9 +471,6 @@
         if (options == null) {
           options = {};
         }
-        /*console.debug 'Layout#initialize', options
-        */
-
         this.title = options.title;
         _(options).defaults({
           loginClasses: true,
@@ -468,6 +479,7 @@
         this.subscribeEvent('beforeControllerDispose', this.hideOldView);
         this.subscribeEvent('startupController', this.showNewView);
         this.subscribeEvent('startupController', this.adjustTitle);
+        this.delegateEvents();
         if (options.loginClasses) {
           this.subscribeEvent('loginStatus', this.updateLoginClasses);
           this.updateLoginClasses();
@@ -476,6 +488,10 @@
           return this.initLinkRouting();
         }
       };
+
+      Layout.prototype.undelegateEvents = Backbone.View.prototype.undelegateEvents;
+
+      Layout.prototype.delegateEvents = Backbone.View.prototype.delegateEvents;
 
       Layout.prototype.hideOldView = function(controller) {
         var view;
@@ -570,13 +586,12 @@
       Layout.prototype.disposed = false;
 
       Layout.prototype.dispose = function() {
-        /*console.debug 'Layout#dispose'
-        */
         if (this.disposed) {
           return;
         }
         this.stopLinkRouting();
         this.unsubscribeAllEvents();
+        this.undelegateEvents();
         delete this.title;
         this.disposed = true;
         return typeof Object.freeze === "function" ? Object.freeze(this) : void 0;
@@ -631,9 +646,6 @@
       }
 
       View.prototype.initialize = function(options) {
-        /*console.debug 'View#initialize', this, 'options', options
-        */
-
         var prop, _i, _len, _ref;
         if (options) {
           _ref = ['autoRender', 'container', 'containerMethod'];
@@ -682,10 +694,11 @@
         eventType += ".delegate" + this.cid;
         handler = _(handler).bind(this);
         if (selector) {
-          return this.$el.on(eventType, selector, handler);
+          this.$el.on(eventType, selector, handler);
         } else {
-          return this.$el.on(eventType, handler);
+          this.$el.on(eventType, handler);
         }
+        return handler;
       };
 
       View.prototype.undelegate = function() {
@@ -693,43 +706,43 @@
       };
 
       View.prototype.modelBind = function(type, handler) {
-        var model;
+        var modelOrCollection;
         if (typeof type !== 'string') {
           throw new TypeError('View#modelBind: ' + 'type must be a string');
         }
         if (typeof handler !== 'function') {
           throw new TypeError('View#modelBind: ' + 'handler argument must be function');
         }
-        model = this.model || this.collection;
-        if (!model) {
+        modelOrCollection = this.model || this.collection;
+        if (!modelOrCollection) {
           throw new TypeError('View#modelBind: no model or collection set');
         }
-        model.off(type, handler, this);
-        return model.on(type, handler, this);
+        modelOrCollection.off(type, handler, this);
+        return modelOrCollection.on(type, handler, this);
       };
 
       View.prototype.modelUnbind = function(type, handler) {
-        var model;
+        var modelOrCollection;
         if (typeof type !== 'string') {
           throw new TypeError('View#modelUnbind: ' + 'type argument must be a string');
         }
         if (typeof handler !== 'function') {
           throw new TypeError('View#modelUnbind: ' + 'handler argument must be a function');
         }
-        model = this.model || this.collection;
-        if (!model) {
+        modelOrCollection = this.model || this.collection;
+        if (!modelOrCollection) {
           return;
         }
-        return model.off(type, handler);
+        return modelOrCollection.off(type, handler);
       };
 
       View.prototype.modelUnbindAll = function() {
-        var model;
-        model = this.model || this.collection;
-        if (!model) {
+        var modelOrCollection;
+        modelOrCollection = this.model || this.collection;
+        if (!modelOrCollection) {
           return;
         }
-        return model.off(null, null, this);
+        return modelOrCollection.off(null, null, this);
       };
 
       View.prototype.pass = function(attribute, selector) {
@@ -787,20 +800,30 @@
       };
 
       View.prototype.getTemplateData = function() {
-        var modelAttributes, serialize, templateData;
-        serialize = function(object) {
-          var key, result, value;
-          result = {};
-          for (key in object) {
-            value = object[key];
-            result[key] = value instanceof Model ? serialize(value.getAttributes()) : value;
+        var items, model, modelOrCollection, templateData, _i, _len, _ref;
+        if (this.model) {
+          templateData = this.model.serialize();
+        } else if (this.collection) {
+          items = [];
+          _ref = this.collection.models;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            model = _ref[_i];
+            items.push(model.serialize());
           }
-          return result;
-        };
-        modelAttributes = this.model && this.model.getAttributes();
-        templateData = modelAttributes ? utils.beget(serialize(modelAttributes)) : {};
-        if (this.model && typeof this.model.state === 'function') {
-          templateData.resolved = this.model.state() === 'resolved';
+          templateData = {
+            items: items
+          };
+        } else {
+          templateData = {};
+        }
+        modelOrCollection = this.model || this.collection;
+        if (modelOrCollection) {
+          if (typeof modelOrCollection.state === 'function' && !('resolved' in templateData)) {
+            templateData.resolved = modelOrCollection.state() === 'resolved';
+          }
+          if (typeof modelOrCollection.isSynced === 'function' && !('synced' in templateData)) {
+            templateData.synced = modelOrCollection.isSynced();
+          }
         }
         return templateData;
       };
@@ -810,9 +833,6 @@
       };
 
       View.prototype.render = function() {
-        /*console.debug 'View#render', this
-        */
-
         var html, templateFunc;
         if (this.disposed) {
           return;
@@ -839,17 +859,14 @@
       View.prototype.disposed = false;
 
       View.prototype.dispose = function() {
-        /*console.debug 'View#dispose', this, 'disposed?', @disposed
-        */
-
-        var prop, properties, view, _i, _j, _len, _len1, _ref;
+        var prop, properties, subview, _i, _j, _len, _len1, _ref;
         if (this.disposed) {
           return;
         }
         _ref = this.subviews;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          view = _ref[_i];
-          view.dispose();
+          subview = _ref[_i];
+          subview.dispose();
         }
         this.unsubscribeAllEvents();
         this.modelUnbindAll();
@@ -923,9 +940,6 @@
           options = {};
         }
         CollectionView.__super__.initialize.apply(this, arguments);
-        /*console.debug 'CollectionView#initialize', this, @collection, options
-        */
-
         _(options).defaults({
           render: true,
           renderItems: true,
@@ -933,13 +947,6 @@
         });
         this.viewsByCid = {};
         this.visibleItems = [];
-        /*
-              @bind 'visibilityChange', (visibleItems) ->
-                console.debug 'visibilityChange', visibleItems.length
-              @modelBind 'syncStateChange', (collection, syncState) ->
-                console.debug 'syncStateChange', syncState
-        */
-
         this.addCollectionListeners();
         if (options.filterer) {
           this.filter(options.filterer);
@@ -1156,14 +1163,10 @@
       };
 
       CollectionView.prototype.dispose = function() {
-        /*console.debug 'CollectionView#dispose', this, 'disposed?', @disposed
-        */
-
         var cid, prop, properties, view, _i, _len, _ref;
         if (this.disposed) {
           return;
         }
-        this.collection.off(null, null, this);
         _ref = this.viewsByCid;
         for (cid in _ref) {
           if (!__hasProp.call(_ref, cid)) continue;
@@ -1205,9 +1208,6 @@
 
         this.addParamName = __bind(this.addParamName, this);
 
-        /*console.debug 'Route#constructor', pattern, target, options
-        */
-
         this.pattern = pattern;
         _ref = target.split('#'), this.controller = _ref[0], this.action = _ref[1];
         this.createRegExp();
@@ -1236,9 +1236,6 @@
       };
 
       Route.prototype.test = function(path) {
-        /*console.debug 'Route#test', this, "path »#{path}«", typeof path
-        */
-
         var constraint, constraints, matched, name, params;
         matched = this.regExp.test(path);
         if (!matched) {
@@ -1259,9 +1256,6 @@
       };
 
       Route.prototype.handler = function(path, options) {
-        /*console.debug 'Route#handler', this, path, options
-        */
-
         var params;
         params = this.buildParams(path, options);
         return mediator.publish('matchRoute', this, params);
@@ -1347,9 +1341,6 @@
 
         this.match = __bind(this.match, this);
 
-        /*console.debug 'Router#constructor'
-        */
-
         _(this.options).defaults({
           pushState: true
         });
@@ -1380,9 +1371,6 @@
       };
 
       Router.prototype.route = function(path) {
-        /*console.debug 'Router#route', path
-        */
-
         var handler, _i, _len, _ref;
         path = path.replace(/^(\/#|\/)/, '');
         _ref = Backbone.history.handlers;
@@ -1405,8 +1393,6 @@
       };
 
       Router.prototype.changeURL = function(url) {
-        /*console.debug 'Router#changeURL', url
-        */
         return Backbone.history.navigate(url, {
           trigger: false
         });
@@ -1419,8 +1405,6 @@
       Router.prototype.disposed = false;
 
       Router.prototype.dispose = function() {
-        /*console.debug 'Router#dispose'
-        */
         if (this.disposed) {
           return;
         }
@@ -1574,7 +1558,7 @@
     return SyncMachine;
   });
 
-  define('chaplin/lib/utils', ['chaplin/mediator', 'chaplin/lib/support'], function(mediator, support) {
+  define('chaplin/lib/utils', ['chaplin/lib/support'], function(support) {
     'use strict';
 
     var utils;
@@ -1582,9 +1566,7 @@
       beget: (function() {
         var ctor;
         if (typeof Object.create === 'function') {
-          return function(obj) {
-            return Object.create(obj);
-          };
+          return Object.create;
         } else {
           ctor = function() {};
           return function(obj) {
@@ -1616,16 +1598,6 @@
           };
         }
       })(),
-      camelize: (function() {
-        var camelizer, regexp;
-        regexp = /[-_]([a-z])/g;
-        camelizer = function(match, c) {
-          return c.toUpperCase();
-        };
-        return function(string) {
-          return string.replace(regexp, camelizer);
-        };
-      })(),
       upcase: function(str) {
         return str.charAt(0).toUpperCase() + str.substring(1);
       },
@@ -1633,390 +1605,6 @@
         return string.replace(/[A-Z]/g, function(char, index) {
           return (index !== 0 ? '_' : '') + char.toLowerCase();
         });
-      },
-      dasherize: function(string) {
-        return string.replace(/[A-Z]/g, function(char, index) {
-          return (index !== 0 ? '-' : '') + char.toLowerCase();
-        });
-      },
-      sessionStorage: (function() {
-        if (window.sessionStorage && sessionStorage.getItem && sessionStorage.setItem && sessionStorage.removeItem) {
-          return function(key, value) {
-            if (typeof value === 'undefined') {
-              value = sessionStorage.getItem(key);
-              if ((value != null) && value.toString) {
-                return value.toString();
-              } else {
-                return value;
-              }
-            } else {
-              sessionStorage.setItem(key, value);
-              return value;
-            }
-          };
-        } else {
-          return function(key, value) {
-            if (typeof value === 'undefined') {
-              return utils.getCookie(key);
-            } else {
-              utils.setCookie(key, value);
-              return value;
-            }
-          };
-        }
-      })(),
-      sessionStorageRemove: (function() {
-        if (window.sessionStorage && sessionStorage.getItem && sessionStorage.setItem && sessionStorage.removeItem) {
-          return function(key) {
-            return sessionStorage.removeItem(key);
-          };
-        } else {
-          return function(key) {
-            return utils.expireCookie(key);
-          };
-        }
-      })(),
-      getCookie: function(key) {
-        var pair, pairs, val, _i, _len;
-        pairs = document.cookie.split('; ');
-        for (_i = 0, _len = pairs.length; _i < _len; _i++) {
-          pair = pairs[_i];
-          val = pair.split('=');
-          if (decodeURIComponent(val[0]) === key) {
-            return decodeURIComponent(val[1] || '');
-          }
-        }
-        return null;
-      },
-      setCookie: function(key, value, options) {
-        var expires, getOption, payload;
-        if (options == null) {
-          options = {};
-        }
-        payload = "" + (encodeURIComponent(key)) + "=" + (encodeURIComponent(value));
-        getOption = function(name) {
-          if (options[name]) {
-            return "; " + name + "=" + options[name];
-          } else {
-            return '';
-          }
-        };
-        expires = options.expires ? "; expires=" + (options.expires.toUTCString()) : '';
-        return document.cookie = [payload, expires, getOption('path'), getOption('domain'), getOption('secure')].join('');
-      },
-      expireCookie: function(key) {
-        return document.cookie = "" + key + "=nil; expires=" + ((new Date).toGMTString());
-      },
-      loadLib: function(url, success, error, timeout) {
-        var head, onload, script, timeoutHandle;
-        if (timeout == null) {
-          timeout = 7500;
-        }
-        head = document.head || document.getElementsByTagName('head')[0] || document.documentElement;
-        script = document.createElement('script');
-        script.async = 'async';
-        script.src = url;
-        onload = function(_, aborted) {
-          if (aborted == null) {
-            aborted = false;
-          }
-          if (!(aborted || !script.readyState || script.readyState === 'complete')) {
-            return;
-          }
-          clearTimeout(timeoutHandle);
-          script.onload = script.onreadystatechange = script.onerror = null;
-          if (head && script.parentNode) {
-            head.removeChild(script);
-          }
-          script = void 0;
-          if (success && !aborted) {
-            return success();
-          }
-        };
-        script.onload = script.onreadystatechange = onload;
-        script.onerror = function() {
-          onload(null, true);
-          if (error) {
-            return error();
-          }
-        };
-        timeoutHandle = setTimeout(script.onerror, timeout);
-        return head.insertBefore(script, head.firstChild);
-      },
-      /*
-          Wrap methods so they can be called before a deferred is resolved.
-          The actual methods are called once the deferred is resolved.
-      
-          Parameters:
-      
-          Expects an options hash with the following properties:
-      
-          deferred
-            The Deferred object to wait for.
-      
-          methods
-            Either:
-            - A string with a method name e.g. 'method'
-            - An array of strings e.g. ['method1', 'method2']
-            - An object with methods e.g. {method: -> alert('resolved!')}
-      
-          host (optional)
-            If you pass an array of strings in the `methods` parameter the methods
-            are fetched from this object. Defaults to `deferred`.
-      
-          target (optional)
-            The target object the new wrapper methods are created at.
-            Defaults to host if host is given, otherwise it defaults to deferred.
-      
-          onDeferral (optional)
-            An additional callback function which is invoked when the method is called
-            and the Deferred isn't resolved yet.
-            After the method is registered as a done handler on the Deferred,
-            this callback is invoked. This can be used to trigger the resolving
-            of the Deferred.
-      
-          Examples:
-      
-          deferMethods(deferred: def, methods: 'foo')
-            Wrap the method named foo of the given deferred def and
-            postpone all calls until the deferred is resolved.
-      
-          deferMethods(deferred: def, methods: def.specialMethods)
-            Read all methods from the hash def.specialMethods and
-            create wrapped methods with the same names at def.
-      
-          deferMethods(
-            deferred: def, methods: def.specialMethods, target: def.specialMethods
-          )
-            Read all methods from the object def.specialMethods and
-            create wrapped methods at def.specialMethods,
-            overwriting the existing ones.
-      
-          deferMethods(deferred: def, host: obj, methods: ['foo', 'bar'])
-            Wrap the methods obj.foo and obj.bar so all calls to them are postponed
-            until def is resolved. obj.foo and obj.bar are overwritten
-            with their wrappers.
-      */
-
-      deferMethods: function(options) {
-        var deferred, func, host, methods, methodsHash, name, onDeferral, target, _i, _len, _results;
-        deferred = options.deferred;
-        methods = options.methods;
-        host = options.host || deferred;
-        target = options.target || host;
-        onDeferral = options.onDeferral;
-        methodsHash = {};
-        if (typeof methods === 'string') {
-          methodsHash[methods] = host[methods];
-        } else if (methods.length && methods[0]) {
-          for (_i = 0, _len = methods.length; _i < _len; _i++) {
-            name = methods[_i];
-            func = host[name];
-            if (typeof func !== 'function') {
-              throw new TypeError("utils.deferMethods: method " + name + " notfound on host " + host);
-            }
-            methodsHash[name] = func;
-          }
-        } else {
-          methodsHash = methods;
-        }
-        _results = [];
-        for (name in methodsHash) {
-          if (!__hasProp.call(methodsHash, name)) continue;
-          func = methodsHash[name];
-          if (typeof func !== 'function') {
-            continue;
-          }
-          _results.push(target[name] = utils.createDeferredFunction(deferred, func, target, onDeferral));
-        }
-        return _results;
-      },
-      createDeferredFunction: function(deferred, func, context, onDeferral) {
-        if (context == null) {
-          context = deferred;
-        }
-        return function() {
-          var args;
-          args = arguments;
-          if (deferred.state() === 'resolved') {
-            return func.apply(context, args);
-          } else {
-            deferred.done(function() {
-              return func.apply(context, args);
-            });
-            if (typeof onDeferral === 'function') {
-              return onDeferral.apply(context);
-            }
-          }
-        };
-      },
-      accumulator: {
-        collectedData: {},
-        handles: {},
-        handlers: {},
-        successHandlers: {},
-        errorHandlers: {},
-        interval: 2000
-      },
-      wrapAccumulators: function(obj, methods) {
-        var func, name, _i, _len,
-          _this = this;
-        for (_i = 0, _len = methods.length; _i < _len; _i++) {
-          name = methods[_i];
-          func = obj[name];
-          if (typeof func !== 'function') {
-            throw new TypeError("utils.wrapAccumulators: method " + name + " not found");
-          }
-          obj[name] = utils.createAccumulator(name, obj[name], obj);
-        }
-        return $(window).unload(function() {
-          var handler, _ref, _results;
-          _ref = utils.accumulator.handlers;
-          _results = [];
-          for (name in _ref) {
-            handler = _ref[name];
-            _results.push(handler({
-              async: false
-            }));
-          }
-          return _results;
-        });
-      },
-      createAccumulator: function(name, func, context) {
-        var acc, accumulatedError, accumulatedSuccess, cleanup, id;
-        if (!(id = func.__uniqueID)) {
-          id = func.__uniqueID = name + String(Math.random()).replace('.', '');
-        }
-        acc = utils.accumulator;
-        cleanup = function() {
-          delete acc.collectedData[id];
-          delete acc.successHandlers[id];
-          return delete acc.errorHandlers[id];
-        };
-        accumulatedSuccess = function() {
-          var handler, handlers, _i, _len;
-          handlers = acc.successHandlers[id];
-          if (handlers) {
-            for (_i = 0, _len = handlers.length; _i < _len; _i++) {
-              handler = handlers[_i];
-              handler.apply(this, arguments);
-            }
-          }
-          return cleanup();
-        };
-        accumulatedError = function() {
-          var handler, handlers, _i, _len;
-          handlers = acc.errorHandlers[id];
-          if (handlers) {
-            for (_i = 0, _len = handlers.length; _i < _len; _i++) {
-              handler = handlers[_i];
-              handler.apply(this, arguments);
-            }
-          }
-          return cleanup();
-        };
-        return function() {
-          var data, error, handler, rest, success;
-          data = arguments[0], success = arguments[1], error = arguments[2], rest = 4 <= arguments.length ? __slice.call(arguments, 3) : [];
-          if (data) {
-            acc.collectedData[id] = (acc.collectedData[id] || []).concat(data);
-          }
-          if (success) {
-            acc.successHandlers[id] = (acc.successHandlers[id] || []).concat(success);
-          }
-          if (error) {
-            acc.errorHandlers[id] = (acc.errorHandlers[id] || []).concat(error);
-          }
-          if (acc.handles[id]) {
-            return;
-          }
-          handler = function(options) {
-            var args, collectedData;
-            if (options == null) {
-              options = options;
-            }
-            if (!(collectedData = acc.collectedData[id])) {
-              return;
-            }
-            args = [collectedData, accumulatedSuccess, accumulatedError].concat(rest);
-            func.apply(context, args);
-            clearTimeout(acc.handles[id]);
-            delete acc.handles[id];
-            return delete acc.handlers[id];
-          };
-          acc.handlers[id] = handler;
-          return acc.handles[id] = setTimeout((function() {
-            return handler();
-          }), acc.interval);
-        };
-      },
-      afterLogin: function() {
-        var args, context, eventType, func, loginHandler;
-        context = arguments[0], func = arguments[1], eventType = arguments[2], args = 4 <= arguments.length ? __slice.call(arguments, 3) : [];
-        if (eventType == null) {
-          eventType = 'login';
-        }
-        if (mediator.user) {
-          return func.apply(context, args);
-        } else {
-          loginHandler = function() {
-            mediator.unsubscribe(eventType, loginHandler);
-            return func.apply(context, args);
-          };
-          return mediator.subscribe(eventType, loginHandler);
-        }
-      },
-      deferMethodsUntilLogin: function(obj, methods, eventType) {
-        var func, name, _i, _len, _results;
-        if (eventType == null) {
-          eventType = 'login';
-        }
-        if (typeof methods === 'string') {
-          methods = [methods];
-        }
-        _results = [];
-        for (_i = 0, _len = methods.length; _i < _len; _i++) {
-          name = methods[_i];
-          func = obj[name];
-          if (typeof func !== 'function') {
-            throw new TypeError("utils.deferMethodsUntilLogin: method " + name + "not found");
-          }
-          _results.push(obj[name] = _(utils.afterLogin).bind(null, obj, func, eventType));
-        }
-        return _results;
-      },
-      ensureLogin: function() {
-        var args, context, e, eventType, func, loginContext;
-        context = arguments[0], func = arguments[1], loginContext = arguments[2], eventType = arguments[3], args = 5 <= arguments.length ? __slice.call(arguments, 4) : [];
-        if (eventType == null) {
-          eventType = 'login';
-        }
-        utils.afterLogin.apply(utils, [context, func, eventType].concat(__slice.call(args)));
-        if (!mediator.user) {
-          if ((e = args[0]) && typeof e.preventDefault === 'function') {
-            e.preventDefault();
-          }
-          return mediator.publish('!showLogin', loginContext);
-        }
-      },
-      ensureLoginForMethods: function(obj, methods, loginContext, eventType) {
-        var func, name, _i, _len, _results;
-        if (eventType == null) {
-          eventType = 'login';
-        }
-        if (typeof methods === 'string') {
-          methods = [methods];
-        }
-        _results = [];
-        for (_i = 0, _len = methods.length; _i < _len; _i++) {
-          name = methods[_i];
-          func = obj[name];
-          if (typeof func !== 'function') {
-            throw new TypeError("utils.ensureLoginForMethods: method " + name + "not found");
-          }
-          _results.push(obj[name] = _(utils.ensureLogin).bind(null, obj, func, loginContext, eventType));
-        }
-        return _results;
       },
       modifierKeyPressed: function(event) {
         return event.shiftKey || event.altKey || event.ctrlKey || event.metaKey;

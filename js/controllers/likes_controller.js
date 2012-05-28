@@ -25,8 +25,6 @@ define(['chaplin', 'models/likes', 'models/like', 'views/likes_view', 'views/ful
     };
 
     LikesController.prototype.index = function(params) {
-      /*console.debug 'LikesController#index'
-      */
       this.likes = new Likes();
       return this.view = new LikesView({
         collection: this.likes
@@ -34,8 +32,6 @@ define(['chaplin', 'models/likes', 'models/like', 'views/likes_view', 'views/ful
     };
 
     LikesController.prototype.show = function(params) {
-      /*console.debug 'LikesController#show'
-      */
       this.like = new Like({
         id: params.id
       }, {

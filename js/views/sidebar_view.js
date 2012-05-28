@@ -35,8 +35,6 @@ define(['chaplin', 'views/base/view', 'text!templates/sidebar.hbs'], function(Ch
     };
 
     SidebarView.prototype.loginStatusHandler = function(loggedIn) {
-      /*console.debug 'SidebarView#loginStatusHandler', loggedIn
-      */
       if (loggedIn) {
         this.model = mediator.user;
       } else {

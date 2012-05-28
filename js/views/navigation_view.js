@@ -26,9 +26,6 @@ define(['views/base/view', 'text!templates/navigation.hbs'], function(View, temp
 
     NavigationView.prototype.initialize = function() {
       NavigationView.__super__.initialize.apply(this, arguments);
-      /*console.debug 'NavigationView#initialize'
-      */
-
       return this.subscribeEvent('startupController', this.render);
     };
 

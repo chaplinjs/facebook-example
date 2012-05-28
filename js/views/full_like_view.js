@@ -26,9 +26,6 @@ define(['chaplin', 'views/base/view', 'text!templates/full_like.hbs'], function(
 
     FullLikeView.prototype.initialize = function() {
       FullLikeView.__super__.initialize.apply(this, arguments);
-      /*console.debug 'FullLikeView#initialize'
-      */
-
       if (this.model.state() !== 'resolved') {
         return this.model.done(this.render);
       }
@@ -37,9 +34,6 @@ define(['chaplin', 'views/base/view', 'text!templates/full_like.hbs'], function(
     FullLikeView.prototype.render = function() {
       var provider, user;
       FullLikeView.__super__.render.apply(this, arguments);
-      /*console.debug 'FullLikeView#render'
-      */
-
       if (this.model.state() === 'resolved') {
         user = Chaplin.mediator.user;
         provider = user.get('provider');

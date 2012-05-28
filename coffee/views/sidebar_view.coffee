@@ -17,7 +17,9 @@ define [
     template = null
 
     id: 'sidebar'
+    # Automatically append to the DOM on render
     container: '#sidebar-container'
+    # Automatically render after initialize
     autoRender: true
 
     initialize: ->
@@ -29,7 +31,7 @@ define [
       @delegate 'click', '#logout-button', @logoutButtonClick
 
     loginStatusHandler: (loggedIn) =>
-      ###console.debug 'SidebarView#loginStatusHandler', loggedIn###
+      #console.debug 'SidebarView#loginStatusHandler', loggedIn
       if loggedIn
         @model = mediator.user
       else

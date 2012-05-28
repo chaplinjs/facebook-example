@@ -31,9 +31,6 @@ define(['underscore', 'chaplin', 'models/base/collection', 'models/post'], funct
     };
 
     Posts.prototype.fetch = function() {
-      /*console.debug 'Posts#fetch'
-      */
-
       var facebook, user;
       user = Chaplin.mediator.user;
       if (!user) {
@@ -48,9 +45,6 @@ define(['underscore', 'chaplin', 'models/base/collection', 'models/post'], funct
     };
 
     Posts.prototype.processPosts = function(response) {
-      /*console.debug 'Posts#processPosts', response, response.data
-      */
-
       var posts;
       if (this.disposed) {
         return;
