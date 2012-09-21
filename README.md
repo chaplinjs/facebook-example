@@ -13,7 +13,7 @@ This example uses a Facebook application named “Chaplin Example App”. On log
 The original sources are written in CoffeeScript (`coffee/` directory), but this repository already comes with the compiled JavaScripts (`js/` directory). To recompile the CoffeeScripts, you might run the command line [CoffeeScript compiler](http://coffeescript.org/) in the repository’s root directory:
 
 ```
-coffee --bare --output coffee/ js/
+coffee --bare --output js/ coffee/
 ```
 
 This repository also contains a copy of the Chaplin library in `js/vendor/chaplin.js`.
