@@ -7,12 +7,13 @@ define [
 
   class Likes extends Collection
 
+    # Mix in a SyncMachine
+    _.extend @prototype, Chaplin.SyncMachine
+
     model: Like
 
     initialize: ->
       super
-
-      @initSyncMachine()
 
       @subscribeEvent 'login', @fetch
       @subscribeEvent 'logout', @logout

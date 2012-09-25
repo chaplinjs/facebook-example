@@ -20,11 +20,12 @@ define(['chaplin', 'models/base/collection', 'models/like'], function(Chaplin, C
       return Likes.__super__.constructor.apply(this, arguments);
     }
 
+    _.extend(Likes.prototype, Chaplin.SyncMachine);
+
     Likes.prototype.model = Like;
 
     Likes.prototype.initialize = function() {
       Likes.__super__.initialize.apply(this, arguments);
-      this.initSyncMachine();
       this.subscribeEvent('login', this.fetch);
       this.subscribeEvent('logout', this.logout);
       return this.fetch();

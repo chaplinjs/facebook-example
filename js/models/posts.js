@@ -20,11 +20,12 @@ define(['underscore', 'chaplin', 'models/base/collection', 'models/post'], funct
       return Posts.__super__.constructor.apply(this, arguments);
     }
 
+    _.extend(Posts.prototype, Chaplin.SyncMachine);
+
     Posts.prototype.model = Post;
 
     Posts.prototype.initialize = function() {
       Posts.__super__.initialize.apply(this, arguments);
-      this.initSyncMachine();
       this.subscribeEvent('login', this.fetch);
       this.subscribeEvent('logout', this.logout);
       return this.fetch();

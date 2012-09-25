@@ -8,12 +8,13 @@ define [
 
   class Posts extends Collection
 
+    # Mix in a SyncMachine
+    _.extend @prototype, Chaplin.SyncMachine
+
     model: Post
 
     initialize: ->
       super
-
-      @initSyncMachine()
 
       @subscribeEvent 'login', @fetch
       @subscribeEvent 'logout', @logout
