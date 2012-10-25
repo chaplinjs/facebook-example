@@ -2,7 +2,9 @@
 var __hasProp = {}.hasOwnProperty,
   __slice = [].slice;
 
-define(['underscore', 'jquery', 'chaplin'], function(_, jquery, Chaplin) {
+define(['underscore', 'chaplin'], function(_, Chaplin) {
+  ' use strict';
+
   var mediator, utils;
   mediator = Chaplin.mediator;
   utils = Chaplin.utils.beget(Chaplin.utils);

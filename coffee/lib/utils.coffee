@@ -1,8 +1,8 @@
 define [
   'underscore'
-  'jquery'
   'chaplin'
-], (_, jquery, Chaplin) ->
+], (_, Chaplin) ->
+  ' use strict'
 
   # Application-specific utilities
   # ------------------------------
